@@ -1,6 +1,6 @@
-# NextVision -- Rewired
+# Vittion
 
-NextVision Rewired is a comprehensive full-stack administration platform designed for the optical industry. It enables seamless management of specialized product catalogs and provides high-fidelity, immersive lens demonstration experiences.
+Vittion is a comprehensive full-stack administration platform designed for the optical industry. It enables seamless management of specialized product catalogs and provides high-fidelity, immersive lens demonstration experiences.
 
 ## 🚀 Key Features
 
@@ -44,7 +44,7 @@ NextVision Rewired is a comprehensive full-stack administration platform designe
    ```
 3. **Seed the Database** (Required for initial data)
    ```bash
-   docker exec nextvision-backend python seed.py
+   docker exec vittion-backend python seed.py
    ```
 4. **Launch the Frontend**
    ```bash
@@ -55,7 +55,7 @@ NextVision Rewired is a comprehensive full-stack administration platform designe
 
 ### Environment Variables
 
-The backend automatically connects to PostgreSQL via the `DATABASE_URL` defined in `docker-compose.yml`. Default: `postgresql://nextvision:nextvision@db:5432/nextvision`.
+The backend automatically connects to PostgreSQL via the `DATABASE_URL` defined in `docker-compose.yml`. Default: `postgresql://vittion:vittion@db:5432/vittion`.
 
 ## 📂 Project Structure
 
@@ -78,4 +78,4 @@ Use the **Lenses** management dashboard (or API) to create a new Lens record. Li
 
 ---
 
-_NextVision Rewired — Immersive Optical Engineering_
+_Vittion — Immersive Optical Engineering_

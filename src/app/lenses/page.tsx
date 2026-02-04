@@ -40,7 +40,7 @@ export default function LensesIndexPage() {
               </h1>
               <p className="text-slate-500 mt-2 text-lg">
                 Sélectionnez un équipement pour lancer l'expérience immersive
-                NextVision.
+                Vittion.
               </p>
             </div>
           </div>
@@ -84,7 +84,7 @@ export default function LensesIndexPage() {
       {/* Footer Decoration */}
       <footer className="py-12 px-10">
         <div className="max-w-7xl mx-auto border-t border-slate-100 pt-8 text-center text-slate-400 text-xs uppercase tracking-widest font-bold">
-          NextVision UI © 2026 Immersive Experience
+          Vittion © 2026 Immersive Experience
         </div>
       </footer>
     </div>

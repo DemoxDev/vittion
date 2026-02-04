@@ -1,14 +1,14 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: nextvision-db
+    container_name: vittion-db
     restart: always
     environment:
-      - POSTGRES_USER=nextvision
-      - POSTGRES_PASSWORD=nextvision
-      - POSTGRES_DB=nextvision
+      - POSTGRES_USER=vittion
+      - POSTGRES_PASSWORD=vittion
+      - POSTGRES_DB=vittion
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U nextvision -d nextvision"]
+      test: ["CMD-SHELL", "pg_isready -U vittion -d vittion"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -20,10 +20,10 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       network: host
-    container_name: nextvision-backend
+    container_name: vittion-backend
     restart: always
     environment:
-      - DATABASE_URL=postgresql://nextvision:nextvision@db:5432/nextvision
+      - DATABASE_URL=postgresql://vittion:vittion@db:5432/vittion
       - FLASK_ENV=development
       - FLASK_APP=app.py
     ports:

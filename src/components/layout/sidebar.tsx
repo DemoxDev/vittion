@@ -24,7 +24,7 @@ export function Sidebar() {
     <aside className="w-64 bg-slate-900 text-white flex flex-col h-screen fixed left-0 top-0 border-r border-slate-800">
       <div className="p-6 border-b border-slate-800">
         <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-          NextVision
+          Vittion
         </h1>
         <p className="text-xs text-slate-400 mt-1">Admin Panel</p>
       </div>
@@ -62,7 +62,7 @@ export function Sidebar() {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-medium text-white">Admin User</span>
-            <span className="text-xs">admin@nextvision.com</span>
+            <span className="text-xs">admin@vittion.com</span>
           </div>
         </div>
       </div>

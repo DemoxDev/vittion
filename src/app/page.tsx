@@ -1,13 +1,13 @@
-import { cn } from "@/lib/utils";
-
 export default function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-white text-center">
-      <h1 className={cn("text-6xl font-bold text-primary-blue mb-4")}>
-        NextVision
+      <h1 className="text-4xl md:text-6xl font-bold text-slate-900 tracking-tight leading-tight">
+        Vittion <br />
+        <span className="text-blue-600 italic">Rewired</span>
       </h1>
-      <p className="text-xl text-slate-600 mb-8">
-        Advanced Optical Sales Assistant
+      <p className="mt-6 text-lg text-slate-600 leading-relaxed max-w-xl">
+        L'excellence de l'optique augmentée par l'innovation logicielle. Gérez
+        votre catalogue et explorez vos produits en haute-fidélité.
       </p>
       <div className="flex gap-4">
         <a
