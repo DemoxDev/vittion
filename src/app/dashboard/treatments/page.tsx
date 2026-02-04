@@ -1,15 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EntityTable } from "@/components/features/EntityTable";
 import { EditModal } from "@/components/features/EditModal";
 import { DeleteModal } from "@/components/features/DeleteModal";
-import treatmentsData from "@/lib/data/treatments.json";
-import images from "@/lib/data/images.json";
+import {
+  fetchTreatments,
+  fetchImages,
+  updateTreatment,
+  deleteTreatment,
+} from "@/lib/api";
 
 export default function TreatmentsPage() {
-  const [treatments, setTreatments] = useState(treatmentsData);
+  const [treatments, setTreatments] = useState<any[]>([]);
+  const [images, setImages] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentEntity, setCurrentEntity] = useState<any>(null);
+
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      const [treatmentsData, imagesData] = await Promise.all([
+        fetchTreatments(),
+        fetchImages(),
+      ]);
+      setTreatments(treatmentsData);
+      setImages(imagesData);
+    } catch (error) {
+      console.error("Failed to load treatments data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const columns = [
     {
@@ -55,14 +81,27 @@ export default function TreatmentsPage() {
     setIsDeleteOpen(true);
   };
 
-  const handleSave = (updated: any) => {
-    setTreatments(treatments.map((t) => (t.id === updated.id ? updated : t)));
-    setIsEditOpen(false);
+  const handleSave = async (updated: any) => {
+    try {
+      await updateTreatment(updated.id, updated);
+      await loadData();
+      setIsEditOpen(false);
+    } catch (error) {
+      console.error("Failed to save treatment:", error);
+      alert("Une erreur est survenue lors de la sauvegarde.");
+    }
   };
 
-  const confirmDelete = () => {
-    setTreatments(treatments.filter((t) => t.id !== currentEntity.id));
-    setIsDeleteOpen(false);
+  const confirmDelete = async () => {
+    if (!currentEntity) return;
+    try {
+      await deleteTreatment(currentEntity.id);
+      await loadData();
+      setIsDeleteOpen(false);
+    } catch (error) {
+      console.error("Failed to delete treatment:", error);
+      alert("Une erreur est survenue lors de la suppression.");
+    }
   };
 
   return (
@@ -73,6 +112,7 @@ export default function TreatmentsPage() {
         columns={columns}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        isLoading={isLoading}
         searchPlaceholder="Rechercher un traitement..."
       />
 

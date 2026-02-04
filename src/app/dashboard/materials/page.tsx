@@ -1,15 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EntityTable } from "@/components/features/EntityTable";
 import { EditModal } from "@/components/features/EditModal";
 import { DeleteModal } from "@/components/features/DeleteModal";
-import materialsData from "@/lib/data/materials.json";
-import images from "@/lib/data/images.json";
+import {
+  fetchMaterials,
+  fetchImages,
+  updateMaterial,
+  deleteMaterial,
+} from "@/lib/api";
 
 export default function MaterialsPage() {
-  const [materials, setMaterials] = useState(materialsData);
+  const [materials, setMaterials] = useState<any[]>([]);
+  const [images, setImages] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentEntity, setCurrentEntity] = useState<any>(null);
+
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      const [materialsData, imagesData] = await Promise.all([
+        fetchMaterials(),
+        fetchImages(),
+      ]);
+      setMaterials(materialsData);
+      setImages(imagesData);
+    } catch (error) {
+      console.error("Failed to load materials data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const columns = [
     {
@@ -55,14 +81,27 @@ export default function MaterialsPage() {
     setIsDeleteOpen(true);
   };
 
-  const handleSave = (updated: any) => {
-    setMaterials(materials.map((m) => (m.id === updated.id ? updated : m)));
-    setIsEditOpen(false);
+  const handleSave = async (updated: any) => {
+    try {
+      await updateMaterial(updated.id, updated);
+      await loadData();
+      setIsEditOpen(false);
+    } catch (error) {
+      console.error("Failed to save material:", error);
+      alert("Une erreur est survenue lors de la sauvegarde.");
+    }
   };
 
-  const confirmDelete = () => {
-    setMaterials(materials.filter((m) => m.id !== currentEntity.id));
-    setIsDeleteOpen(false);
+  const confirmDelete = async () => {
+    if (!currentEntity) return;
+    try {
+      await deleteMaterial(currentEntity.id);
+      await loadData();
+      setIsDeleteOpen(false);
+    } catch (error) {
+      console.error("Failed to delete material:", error);
+      alert("Une erreur est survenue lors de la suppression.");
+    }
   };
 
   return (
@@ -73,6 +112,7 @@ export default function MaterialsPage() {
         columns={columns}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        isLoading={isLoading}
         searchPlaceholder="Rechercher une matière..."
       />
 

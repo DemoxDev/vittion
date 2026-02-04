@@ -65,7 +65,13 @@ def seed_data():
                 db.session.add(material)
 
         db.session.commit()
-        print("Database seeded successfully!")
+        
+        # Synchronize sequences for Postgres after manual ID inserts
+        for table in ['images', 'designs', 'treatments', 'materials']:
+            db.session.execute(db.text(f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), coalesce(max(id), 1), max(id) IS NOT null) FROM {table};"))
+        
+        db.session.commit()
+        print("Database seeded and sequences synchronized successfully!")
 
 if __name__ == '__main__':
     seed_data()

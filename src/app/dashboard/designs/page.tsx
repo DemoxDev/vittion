@@ -1,15 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EntityTable } from "@/components/features/EntityTable";
 import { EditModal } from "@/components/features/EditModal";
 import { DeleteModal } from "@/components/features/DeleteModal";
-import designsData from "@/lib/data/designs.json";
-import images from "@/lib/data/images.json";
+import {
+  fetchDesigns,
+  fetchImages,
+  updateDesign,
+  deleteDesign,
+} from "@/lib/api";
 
 export default function DesignsPage() {
-  const [designs, setDesigns] = useState(designsData);
+  const [designs, setDesigns] = useState<any[]>([]);
+  const [images, setImages] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentEntity, setCurrentEntity] = useState<any>(null);
+
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      const [designsData, imagesData] = await Promise.all([
+        fetchDesigns(),
+        fetchImages(),
+      ]);
+      setDesigns(designsData);
+      setImages(imagesData);
+    } catch (error) {
+      console.error("Failed to load designs data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const columns = [
     {
@@ -55,14 +81,27 @@ export default function DesignsPage() {
     setIsDeleteOpen(true);
   };
 
-  const handleSave = (updated: any) => {
-    setDesigns(designs.map((d) => (d.id === updated.id ? updated : d)));
-    setIsEditOpen(false);
+  const handleSave = async (updated: any) => {
+    try {
+      await updateDesign(updated.id, updated);
+      await loadData();
+      setIsEditOpen(false);
+    } catch (error) {
+      console.error("Failed to save design:", error);
+      alert("Une erreur est survenue lors de la sauvegarde.");
+    }
   };
 
-  const confirmDelete = () => {
-    setDesigns(designs.filter((d) => d.id !== currentEntity.id));
-    setIsDeleteOpen(false);
+  const confirmDelete = async () => {
+    if (!currentEntity) return;
+    try {
+      await deleteDesign(currentEntity.id);
+      await loadData();
+      setIsDeleteOpen(false);
+    } catch (error) {
+      console.error("Failed to delete design:", error);
+      alert("Une erreur est survenue lors de la suppression.");
+    }
   };
 
   return (
@@ -74,6 +113,7 @@ export default function DesignsPage() {
         onView={(item) => console.log("View", item)}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        isLoading={isLoading}
         searchPlaceholder="Rechercher un design..."
       />
 
