@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "name": "General Vision Banner",
+    "url": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=800&auto=format&fit=crop",
+    "category": "Design",
+    "resolution": "800x600"
+  },
+  {
+    "id": 2,
+    "name": "Pro Digital View",
+    "url": "https://images.unsplash.com/photo-1570222094114-28a9d8896c74?q=80&w=800&auto=format&fit=crop",
+    "category": "Design",
+    "resolution": "800x600"
+  },
+  {
+    "id": 3,
+    "name": "Drive Master Pro",
+    "url": "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=800&auto=format&fit=crop",
+    "category": "Design",
+    "resolution": "800x600"
+  },
+  {
+    "id": 4,
+    "name": "Standard 1.5 Clarity",
+    "url": "https://images.unsplash.com/photo-1518152006812-edab29b069ac?q=80&w=800&auto=format&fit=crop",
+    "category": "Material",
+    "resolution": "800x600"
+  },
+  {
+    "id": 5,
+    "name": "Thin 1.6 Aesthetic",
+    "url": "https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=800&auto=format&fit=crop",
+    "category": "Material",
+    "resolution": "800x600"
+  },
+  {
+    "id": 6,
+    "name": "Blue Protection Coating",
+    "url": "https://images.unsplash.com/photo-1574158622682-e40e69881006?q=80&w=800&auto=format&fit=crop",
+    "category": "Treatment",
+    "resolution": "800x600"
+  },
+  {
+    "id": 7,
+    "name": "Hard Multi-Coating",
+    "url": "https://images.unsplash.com/photo-1516714435131-44d6b64dc3a2?q=80&w=800&auto=format&fit=crop",
+    "category": "Treatment",
+    "resolution": "800x600"
+  }
+]

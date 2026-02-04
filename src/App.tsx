@@ -2,6 +2,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./app/page";
 import DashboardPage from "./app/dashboard/page";
 import DashboardOverview from "./app/dashboard/overview";
+import DesignsPage from "./app/dashboard/designs/page";
+import TreatmentsPage from "./app/dashboard/treatments/page";
+import MaterialsPage from "./app/dashboard/materials/page";
+import ImagesPage from "./app/dashboard/images/page";
 import LensDetailPage from "./app/lenses/[id]/page";
 
 function App() {
@@ -11,7 +15,10 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard" element={<DashboardPage />}>
           <Route index element={<DashboardOverview />} />
-          {/* Add other sub-routes here later */}
+          <Route path="designs" element={<DesignsPage />} />
+          <Route path="treatments" element={<TreatmentsPage />} />
+          <Route path="materials" element={<MaterialsPage />} />
+          <Route path="images" element={<ImagesPage />} />
         </Route>
         <Route path="/lenses/:id" element={<LensDetailPage />} />
       </Routes>

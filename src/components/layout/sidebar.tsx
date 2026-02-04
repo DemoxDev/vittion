@@ -11,8 +11,8 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { title: "Designs", href: "/dashboard/designs", icon: Palette },
-  { title: "Traitements", href: "/dashboard/traitements", icon: Shapes },
-  { title: "Matières", href: "/dashboard/matieres", icon: Layers },
+  { title: "Traitements", href: "/dashboard/treatments", icon: Shapes },
+  { title: "Matières", href: "/dashboard/materials", icon: Layers },
   { title: "Images", href: "/dashboard/images", icon: ImageIcon },
 ];
 

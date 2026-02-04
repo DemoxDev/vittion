@@ -3,14 +3,14 @@
     "id": 1,
     "code": "HMC",
     "name": "Hard Multi-Coating",
-    "description": "Premium anti-reflective coating.\n- Reduces glare\n- Easy to clean\n- Scratch resistant",
-    "default_image_id": 201
+    "description": "Premium anti-reflective coating.",
+    "image_id": 7
   },
   {
     "id": 2,
     "code": "BLUE",
     "name": "Blue Protection",
-    "description": "Blocks harmful blue light from digital devices.\n- Eye comfort\n- Sleep cycle protection",
-    "default_image_id": 202
+    "description": "Blocks harmful blue light.",
+    "image_id": 6
   }
 ]
