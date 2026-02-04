@@ -55,7 +55,9 @@ Vittion is a comprehensive full-stack administration platform designed for the o
 
 ### Environment Variables
 
-The backend automatically connects to PostgreSQL via the `DATABASE_URL` defined in `docker-compose.yml`. Default: `postgresql://vittion:vittion@db:5432/vittion`.
+The backend automatically connects to PostgreSQL via the `DATABASE_URL` defined in `.env`. Default: `postgresql://vittion:vittion@db:5432/vittion`.
+
+Default values are provided in `example.env`.
 
 ## 📂 Project Structure
 

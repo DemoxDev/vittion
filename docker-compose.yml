@@ -4,11 +4,11 @@ services:
     container_name: vittion-db
     restart: always
     environment:
-      - POSTGRES_USER=vittion
-      - POSTGRES_PASSWORD=vittion
-      - POSTGRES_DB=vittion
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vittion -d vittion"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -23,9 +23,9 @@ services:
     container_name: vittion-backend
     restart: always
     environment:
-      - DATABASE_URL=postgresql://vittion:vittion@db:5432/vittion
-      - FLASK_ENV=development
-      - FLASK_APP=app.py
+      - DATABASE_URL=${DATABASE_URL}
+      - FLASK_ENV=${FLASK_ENV}
+      - FLASK_APP=${FLASK_APP}
     ports:
       - "5000:5000"
     depends_on:

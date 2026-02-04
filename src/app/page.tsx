@@ -14,13 +14,13 @@ export default function LandingPage() {
           href="/dashboard"
           className="px-6 py-3 bg-primary-blue text-white rounded-full hover:bg-blue-600 transition shadow-lg"
         >
-          Go to Dashboard
+          Panneau d'administration
         </a>
         <a
-          href="/lenses/1"
+          href="/lenses/"
           className="px-6 py-3 bg-white text-primary-blue border border-primary-blue rounded-full hover:bg-blue-50 transition shadow-md"
         >
-          View Demo Lens
+          Catalogue
         </a>
       </div>
     </div>
