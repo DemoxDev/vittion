@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Palette,
@@ -6,6 +8,7 @@ import {
   ImageIcon,
   TrendingUp,
   TrendingDown,
+  RefreshCw,
 } from "lucide-react";
 import {
   BarChart,
@@ -20,52 +23,90 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import designs from "@/lib/data/designs.json";
-import lenses from "@/lib/data/lenses.json";
-import treatments from "@/lib/data/treatments.json";
-import materials from "@/lib/data/materials.json";
+import {
+  fetchDesigns,
+  fetchLenses,
+  fetchTreatments,
+  fetchMaterials,
+} from "@/lib/api";
 
 export default function DashboardOverview() {
+  const [data, setData] = useState({
+    designs: 0,
+    lenses: 0,
+    treatments: 0,
+    materials: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const [d, l, t, m] = await Promise.all([
+          fetchDesigns(),
+          fetchLenses(),
+          fetchTreatments(),
+          fetchMaterials(),
+        ]);
+        setData({
+          designs: d.length,
+          lenses: l.length,
+          treatments: t.length,
+          materials: m.length,
+        });
+      } catch (error) {
+        console.error("Failed to fetch dashboard stats:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadStats();
+  }, []);
+
   const stats = [
     {
       title: "Total Designs",
-      value: designs.length,
+      value: data.designs,
       icon: Palette,
       color: "text-blue-500",
       trend: "+4.5%",
       trendUp: true,
+      href: "/dashboard/designs",
     },
     {
       title: "Active Treatments",
-      value: treatments.length,
+      value: data.treatments,
       icon: Shapes,
       color: "text-orange-500",
       trend: "+2.1%",
       trendUp: true,
+      href: "/dashboard/treatments",
     },
     {
       title: "Materials",
-      value: materials.length,
+      value: data.materials,
       icon: Layers,
       color: "text-green-500",
       trend: "0%",
       trendUp: true,
+      href: "/dashboard/materials",
     },
     {
       title: "Lenses in Catalog",
-      value: lenses.length,
+      value: data.lenses,
       icon: ImageIcon,
       color: "text-purple-500",
       trend: "+12.3%",
       trendUp: true,
+      href: "/lenses",
     },
   ];
 
   const distributionData = [
-    { name: "Designs", value: designs.length, color: "#3b82f6" },
-    { name: "Treatments", value: treatments.length, color: "#f97316" },
-    { name: "Materials", value: materials.length, color: "#22c55e" },
-    { name: "Lenses", value: lenses.length, color: "#a855f7" },
+    { name: "Designs", value: data.designs, color: "#3b82f6" },
+    { name: "Treatments", value: data.treatments, color: "#f97316" },
+    { name: "Materials", value: data.materials, color: "#22c55e" },
+    { name: "Lenses", value: data.lenses, color: "#a855f7" },
   ];
 
   const monthlyData = [
@@ -89,9 +130,13 @@ export default function DashboardOverview() {
           </p>
         </div>
         <div className="bg-slate-50 px-4 py-2 rounded-lg border border-slate-100 flex items-center gap-2">
-          <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+          {isLoading ? (
+            <RefreshCw className="w-4 h-4 text-blue-500 animate-spin" />
+          ) : (
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+          )}
           <span className="text-sm font-medium text-slate-600">
-            Système opérationnel
+            {isLoading ? "Synchronisation..." : "Système opérationnel"}
           </span>
         </div>
       </div>
@@ -100,39 +145,40 @@ export default function DashboardOverview() {
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (
-            <Card
-              key={i}
-              className="border-none shadow-sm hover:shadow-md transition-shadow"
-            >
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-slate-500">
-                  {stat.title}
-                </CardTitle>
-                <div className={`p-2 rounded-lg bg-slate-50`}>
-                  <Icon className={`h-4 w-4 ${stat.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900">
-                  {stat.value}
-                </div>
-                <div className="flex items-center mt-1 gap-1">
-                  {stat.trendUp ? (
-                    <TrendingUp className="w-3 h-3 text-emerald-500" />
-                  ) : (
-                    <TrendingDown className="w-3 h-3 text-rose-500" />
-                  )}
-                  <span
-                    className={`text-xs font-semibold ${stat.trendUp ? "text-emerald-500" : "text-rose-500"}`}
+            <Link key={i} to={stat.href}>
+              <Card className="border-none shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-slate-500 group-hover:text-slate-900 transition-colors">
+                    {stat.title}
+                  </CardTitle>
+                  <div
+                    className={`p-2 rounded-lg bg-slate-50 group-hover:bg-white transition-colors`}
                   >
-                    {stat.trend}
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-medium ml-1">
-                    vs mois dernier
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
+                    <Icon className={`h-4 w-4 ${stat.color}`} />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-slate-900">
+                    {isLoading ? "..." : stat.value}
+                  </div>
+                  <div className="flex items-center mt-1 gap-1">
+                    {stat.trendUp ? (
+                      <TrendingUp className="w-3 h-3 text-emerald-500" />
+                    ) : (
+                      <TrendingDown className="w-3 h-3 text-rose-500" />
+                    )}
+                    <span
+                      className={`text-xs font-semibold ${stat.trendUp ? "text-emerald-500" : "text-rose-500"}`}
+                    >
+                      {stat.trend}
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-medium ml-1">
+                      vs mois dernier
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           );
         })}
       </div>
