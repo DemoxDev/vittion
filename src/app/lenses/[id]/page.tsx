@@ -235,7 +235,7 @@ export default function LensDetailPage() {
               <span className="h-px flex-1 bg-slate-100 ml-4"></span>
             </h2>
             <ComparisonCard
-              title="DuraVision® Platinum"
+              title="Platinium Brocode"
               subtitle="Excellence"
               imageSrc="https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=800&auto=format&fit=crop"
               overlayText="Voir plus"

@@ -1,8 +1,16 @@
+import { useState } from "react";
 import { EntityTable } from "@/components/features/EntityTable";
-import designs from "@/lib/data/designs.json";
+import { EditModal } from "@/components/features/EditModal";
+import { DeleteModal } from "@/components/features/DeleteModal";
+import designsData from "@/lib/data/designs.json";
 import images from "@/lib/data/images.json";
 
 export default function DesignsPage() {
+  const [designs, setDesigns] = useState(designsData);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [currentEntity, setCurrentEntity] = useState<any>(null);
+
   const columns = [
     {
       header: "Image Associée",
@@ -37,15 +45,59 @@ export default function DesignsPage() {
     },
   ];
 
+  const handleEdit = (item: any) => {
+    setCurrentEntity(item);
+    setIsEditOpen(true);
+  };
+
+  const handleDelete = (item: any) => {
+    setCurrentEntity(item);
+    setIsDeleteOpen(true);
+  };
+
+  const handleSave = (updated: any) => {
+    setDesigns(designs.map((d) => (d.id === updated.id ? updated : d)));
+    setIsEditOpen(false);
+  };
+
+  const confirmDelete = () => {
+    setDesigns(designs.filter((d) => d.id !== currentEntity.id));
+    setIsDeleteOpen(false);
+  };
+
   return (
-    <EntityTable
-      title="Catalogue des Designs"
-      data={designs}
-      columns={columns}
-      onView={(item) => console.log("View", item)}
-      onEdit={(item) => console.log("Edit", item)}
-      onDelete={(item) => console.log("Delete", item)}
-      searchPlaceholder="Rechercher un design..."
-    />
+    <>
+      <EntityTable
+        title="Catalogue des Designs"
+        data={designs}
+        columns={columns}
+        onView={(item) => console.log("View", item)}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        searchPlaceholder="Rechercher un design..."
+      />
+
+      {currentEntity && (
+        <>
+          <EditModal
+            isOpen={isEditOpen}
+            onClose={() => setIsEditOpen(false)}
+            onSave={handleSave}
+            entity={currentEntity}
+            fields={[
+              { key: "name", label: "Nom", type: "text" },
+              { key: "description", label: "Description", type: "textarea" },
+            ]}
+          />
+
+          <DeleteModal
+            isOpen={isDeleteOpen}
+            onClose={() => setIsDeleteOpen(false)}
+            onConfirm={confirmDelete}
+            title={currentEntity.name || currentEntity.code || ""}
+          />
+        </>
+      )}
+    </>
   );
 }

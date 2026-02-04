@@ -2,6 +2,7 @@ import { useState } from "react";
 import imagesData from "@/lib/data/images.json";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ImageDetailModal } from "@/components/features/ImageDetailModal";
 import {
   MoreVertical,
   Download,
@@ -17,12 +18,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function ImagesPage() {
   const [images, setImages] = useState(imagesData);
   const [search, setSearch] = useState("");
+  const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const filteredImages = images.filter(
     (img) =>
       img.name.toLowerCase().includes(search.toLowerCase()) ||
       img.category.toLowerCase().includes(search.toLowerCase()),
   );
+
+  const handleOpenDetail = (img: any) => {
+    setSelectedImage(img);
+    setIsDetailOpen(true);
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -69,7 +77,7 @@ export default function ImagesPage() {
               <div
                 key={img.id}
                 className="group relative bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer"
-                onClick={() => console.log("Associate/Modify", img)}
+                onClick={() => handleOpenDetail(img)}
               >
                 <div className="aspect-[4/3] w-full overflow-hidden bg-slate-50">
                   <img
@@ -195,6 +203,12 @@ export default function ImagesPage() {
           </div>
         </TabsContent>
       </Tabs>
+
+      <ImageDetailModal
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        image={selectedImage}
+      />
     </div>
   );
 }

@@ -1,8 +1,16 @@
+import { useState } from "react";
 import { EntityTable } from "@/components/features/EntityTable";
-import treatments from "@/lib/data/treatments.json";
+import { EditModal } from "@/components/features/EditModal";
+import { DeleteModal } from "@/components/features/DeleteModal";
+import treatmentsData from "@/lib/data/treatments.json";
 import images from "@/lib/data/images.json";
 
 export default function TreatmentsPage() {
+  const [treatments, setTreatments] = useState(treatmentsData);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [currentEntity, setCurrentEntity] = useState<any>(null);
+
   const columns = [
     {
       header: "Image Associée",
@@ -37,14 +45,58 @@ export default function TreatmentsPage() {
     },
   ];
 
+  const handleEdit = (item: any) => {
+    setCurrentEntity(item);
+    setIsEditOpen(true);
+  };
+
+  const handleDelete = (item: any) => {
+    setCurrentEntity(item);
+    setIsDeleteOpen(true);
+  };
+
+  const handleSave = (updated: any) => {
+    setTreatments(treatments.map((t) => (t.id === updated.id ? updated : t)));
+    setIsEditOpen(false);
+  };
+
+  const confirmDelete = () => {
+    setTreatments(treatments.filter((t) => t.id !== currentEntity.id));
+    setIsDeleteOpen(false);
+  };
+
   return (
-    <EntityTable
-      title="Traitements de surface"
-      data={treatments}
-      columns={columns}
-      onEdit={(item) => console.log("Edit", item)}
-      onDelete={(item) => console.log("Delete", item)}
-      searchPlaceholder="Rechercher un traitement..."
-    />
+    <>
+      <EntityTable
+        title="Traitements de surface"
+        data={treatments}
+        columns={columns}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        searchPlaceholder="Rechercher un traitement..."
+      />
+
+      {currentEntity && (
+        <>
+          <EditModal
+            isOpen={isEditOpen}
+            onClose={() => setIsEditOpen(false)}
+            onSave={handleSave}
+            entity={currentEntity}
+            fields={[
+              { key: "code", label: "Code", type: "text" },
+              { key: "description", label: "Description", type: "textarea" },
+            ]}
+          />
+
+          <DeleteModal
+            isOpen={isDeleteOpen}
+            onClose={() => setIsDeleteOpen(false)}
+            onConfirm={confirmDelete}
+            title={currentEntity.code || currentEntity.name || ""}
+          />
+        </>
+      )}
+    </>
   );
 }
