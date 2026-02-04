@@ -130,59 +130,64 @@ export default function LensDetailPage() {
       {/* Main Layout Area - Adaptive to Window */}
       <main
         ref={containerRef}
-        className="flex-1 flex relative px-10 items-end pb-8"
+        className="flex-1 flex relative px-10 items-end pb-0 overflow-hidden"
       >
-        {/* LEFT: Lens Pillar - Anchored Bottom Left */}
-        <div className="w-[40%] h-full relative pointer-events-none select-none">
-          <div className="absolute bottom-[-10%] -left-20 w-full h-[70%] flex flex-col-reverse items-start gap-0 origin-bottom-left">
-            {/* Layer 3: Treatment (Front/Bottom) */}
-            <div className="relative w-[500px] h-[350px] bg-gradient-to-br from-purple-100/40 via-purple-50/20 to-white/10 border border-purple-200/30 rounded-[5rem_5rem_8rem_4rem] backdrop-blur-md shadow-2xl transform rotate-[-3deg] z-30 transition-transform duration-500">
+        {/* LEFT: Lens Pillar - Anchored Bottom Left with Overlap */}
+        <div className="w-[35%] h-full relative pointer-events-none select-none overflow-visible">
+          {/* We position the layers absolutely to achieve the "Pillar" overlap */}
+          <div className="absolute bottom-[-5%] left-[-40px] w-full h-[85%]">
+            {/* Layer 3: Treatment (Back-most / Bottom) */}
+            <div className="absolute bottom-[0%] left-[0%] w-[540px] h-[400px] bg-gradient-to-br from-purple-200/80 via-purple-100/60 to-purple-50/30 border border-purple-300/40 rounded-[5rem_5rem_8rem_4rem] backdrop-blur-md shadow-2xl transform rotate-[-3deg] z-10 transition-transform duration-500">
               <LensBadge
                 number={3}
                 badgeRef={badgeRefs[2]}
-                className="absolute right-12 top-10 transform translate-x-1/2 -translate-y-1/2"
+                className="absolute right-0 top-12 transform translate-x-1/2 -translate-y-1/2"
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-50" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/30 to-transparent opacity-60" />
             </div>
 
-            {/* Layer 2: Material (Middle) */}
-            <div className="relative w-[480px] h-[330px] bg-gradient-to-br from-green-100/30 via-green-50/10 to-white/5 border border-green-200/20 rounded-[4rem_7rem_6rem_5rem] backdrop-blur-md shadow-2xl transform rotate-[2deg] -mb-48 ml-4 z-20 transition-transform duration-500">
+            {/* Layer 2: Material (Middle / Center) */}
+            {/* Shifted further left and on top of 3 */}
+            <div className="absolute bottom-[25%] left-[-80px] w-[520px] h-[400px] bg-gradient-to-br from-green-200/80 via-green-100/60 to-green-50/30 border border-green-300/40 rounded-[4rem_7rem_6rem_5rem] backdrop-blur-md shadow-2xl transform rotate-[2deg] z-20 transition-transform duration-500">
               <LensBadge
                 number={2}
                 badgeRef={badgeRefs[1]}
-                className="absolute right-16 top-10 transform translate-x-1/2 -translate-y-1/2"
+                className="absolute right-0 top-12 transform translate-x-1/2 -translate-y-1/2"
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-30" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-40" />
             </div>
 
-            {/* Layer 1: Design (Back/Top) */}
-            <div className="relative w-[460px] h-[310px] bg-gradient-to-br from-blue-100/40 via-blue-50/20 to-white/10 border border-blue-200/30 rounded-[6rem_4rem_5rem_7rem] backdrop-blur-md shadow-2xl transform rotate-[-4deg] -mb-44 ml-8 z-10 transition-transform duration-500">
+            {/* Layer 1: Design (Front-most / Top) */}
+            {/* Shifted furthest left and on top of 2 */}
+            <div className="absolute bottom-[50%] left-[-120px] w-[500px] h-[400px] bg-gradient-to-br from-blue-300/90 via-blue-200/70 to-blue-100/40 border border-blue-400/50 rounded-[6rem_4rem_5rem_7rem] backdrop-blur-md shadow-2xl transform rotate-[-4deg] z-30 transition-transform duration-500">
               <LensBadge
                 number={1}
                 badgeRef={badgeRefs[0]}
-                className="absolute right-14 top-10 transform translate-x-1/2 -translate-y-1/2"
+                className="absolute right-0 top-12 transform translate-x-1/2 -translate-y-1/2"
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-50" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent opacity-70" />
             </div>
+
+            {/* Dynamic SVG Connectors Overlay - Managed by Main but inside relative parent if possible */}
           </div>
         </div>
 
-        {/* Dynamic SVG Connectors Overlay - Moved to Main level */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-0 opacity-40">
+        {/* Dynamic SVG Connectors Overlay - Final Positioning */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-40 opacity-50">
           {paths.map((p, i) => (
             <path
               key={i}
               d={p}
               fill="none"
-              stroke="#94a3b8"
-              strokeWidth="2"
+              stroke="#64748b"
+              strokeWidth="2.5"
               strokeDasharray="6 6"
             />
           ))}
         </svg>
 
         {/* RIGHT: Feature Content - Distributed to fit height */}
-        <div className="w-[60%] h-full flex flex-col justify-center gap-[5vh] pb-10 pr-10 z-10">
+        <div className="w-[65%] h-full flex flex-col justify-center gap-[4vh] pb-10 pr-10 z-10">
           {/* Section 1: Design */}
           <div ref={sectionRefs[0]} className="flex flex-col gap-3">
             <h2 className="text-xl font-bold text-slate-800 flex items-center gap-3">
