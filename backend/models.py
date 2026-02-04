@@ -24,6 +24,7 @@ class Design(db.Model):
     name = db.Column(db.String(255))
     description = db.Column(db.Text)
     image_id = db.Column(db.Integer, db.ForeignKey('images.id'), nullable=True)
+    lenses = db.relationship('Lens', backref='design', lazy=True)
 
 class Treatment(db.Model):
     __tablename__ = 'treatments'
@@ -32,6 +33,7 @@ class Treatment(db.Model):
     name = db.Column(db.String(255))
     description = db.Column(db.Text)
     image_id = db.Column(db.Integer, db.ForeignKey('images.id'), nullable=True)
+    lenses = db.relationship('Lens', backref='treatment', lazy=True)
 
 class Material(db.Model):
     __tablename__ = 'materials'
@@ -40,3 +42,16 @@ class Material(db.Model):
     name = db.Column(db.String(255))
     description = db.Column(db.Text)
     image_id = db.Column(db.Integer, db.ForeignKey('images.id'), nullable=True)
+    lenses = db.relationship('Lens', backref='material', lazy=True)
+
+class Lens(db.Model):
+    __tablename__ = 'lenses'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text)
+    edi_code = db.Column(db.String(50), unique=True)
+    
+    # Relationships
+    design_id = db.Column(db.Integer, db.ForeignKey('designs.id'), nullable=True)
+    material_id = db.Column(db.Integer, db.ForeignKey('materials.id'), nullable=True)
+    treatment_id = db.Column(db.Integer, db.ForeignKey('treatments.id'), nullable=True)

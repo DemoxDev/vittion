@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Eye } from "lucide-react";
+import { ArrowLeft, Eye, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ComparisonCard } from "@/components/cards/ComparisonCard";
 import { cn } from "@/lib/utils";
-
-import lenses from "@/lib/data/lenses.json";
-import designs from "@/lib/data/designs.json";
+import { fetchLens } from "@/lib/api";
 
 interface LensBadgeProps {
   number: number;
@@ -30,8 +28,9 @@ function LensBadge({ number, className, badgeRef }: LensBadgeProps) {
 
 export default function LensDetailPage() {
   const { id } = useParams();
-  const lens = lenses.find((l) => l.id.toString() === id) || lenses[0];
-  const design = designs.find((d) => d.id === lens.design_id);
+  const [lens, setLens] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Refs for positioning the connectors
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,9 +47,28 @@ export default function LensDetailPage() {
 
   const [paths, setPaths] = useState<string[]>(["", "", ""]);
 
+  const loadLensData = async () => {
+    if (!id) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await fetchLens(parseInt(id));
+      setLens(data);
+    } catch (err) {
+      console.error("Failed to load lens:", err);
+      setError("Impossible de charger les données du verre.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadLensData();
+  }, [id]);
+
   useEffect(() => {
     const updatePaths = () => {
-      if (!containerRef.current) return;
+      if (!containerRef.current || !lens) return;
 
       const containerRect = containerRef.current.getBoundingClientRect();
       const newPaths = sectionRefs.map((secRef, i) => {
@@ -81,14 +99,40 @@ export default function LensDetailPage() {
       setPaths(newPaths);
     };
 
-    // Use a small timeout to ensure layout has settled
-    const timeoutId = setTimeout(updatePaths, 100);
-    window.addEventListener("resize", updatePaths);
-    return () => {
-      window.removeEventListener("resize", updatePaths);
-      clearTimeout(timeoutId);
-    };
-  }, [id]); // Update when lens changes
+    if (!isLoading && lens) {
+      const timeoutId = setTimeout(updatePaths, 150);
+      window.addEventListener("resize", updatePaths);
+      return () => {
+        window.removeEventListener("resize", updatePaths);
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [isLoading, lens, id]);
+
+  if (isLoading) {
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-white">
+        <RefreshCw className="w-8 h-8 text-blue-600 animate-spin mb-4" />
+        <p className="text-slate-500 font-medium">
+          Chargement du démonstrateur...
+        </p>
+      </div>
+    );
+  }
+
+  if (error || !lens) {
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-white p-6 text-center">
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">Oups !</h2>
+        <p className="text-slate-500 mb-6">{error || "Verre introuvable."}</p>
+        <Link to="/dashboard">
+          <Button className="bg-blue-600 rounded-xl px-8">
+            Retour au tableau de bord
+          </Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-screen bg-white flex flex-col overflow-hidden">
@@ -106,9 +150,9 @@ export default function LensDetailPage() {
               Démonstration
             </h1>
             <p className="text-lg text-slate-500">
-              {lens.n_complet} |{" "}
+              {lens.name} |{" "}
               <span className="text-slate-400 font-normal">
-                EDI: {lens.code_edi}
+                EDI: {lens.edi_code}
               </span>
             </p>
             <p className="text-slate-400 text-xs mt-1 uppercase tracking-widest font-bold">
@@ -134,7 +178,6 @@ export default function LensDetailPage() {
       >
         {/* LEFT: Lens Pillar - Anchored Bottom Left with Overlap */}
         <div className="w-[35%] h-full relative pointer-events-none select-none overflow-visible">
-          {/* We position the layers absolutely to achieve the "Pillar" overlap */}
           <div className="absolute bottom-[-5%] left-[-40px] w-full h-[85%]">
             {/* Layer 3: Treatment (Back-most / Bottom) */}
             <div className="absolute bottom-[0%] left-[0%] w-[540px] h-[400px] bg-gradient-to-br from-purple-200/80 via-purple-100/60 to-purple-50/30 border border-purple-300/40 rounded-[5rem_5rem_8rem_4rem] backdrop-blur-md shadow-2xl transform rotate-[-3deg] z-10 transition-transform duration-500">
@@ -147,7 +190,6 @@ export default function LensDetailPage() {
             </div>
 
             {/* Layer 2: Material (Middle / Center) */}
-            {/* Shifted further left and on top of 3 */}
             <div className="absolute bottom-[25%] left-[-80px] w-[520px] h-[400px] bg-gradient-to-br from-green-200/80 via-green-100/60 to-green-50/30 border border-green-300/40 rounded-[4rem_7rem_6rem_5rem] backdrop-blur-md shadow-2xl transform rotate-[2deg] z-20 transition-transform duration-500">
               <LensBadge
                 number={2}
@@ -158,7 +200,6 @@ export default function LensDetailPage() {
             </div>
 
             {/* Layer 1: Design (Front-most / Top) */}
-            {/* Shifted furthest left and on top of 2 */}
             <div className="absolute bottom-[50%] left-[-120px] w-[500px] h-[400px] bg-gradient-to-br from-blue-300/90 via-blue-200/70 to-blue-100/40 border border-blue-400/50 rounded-[6rem_4rem_5rem_7rem] backdrop-blur-md shadow-2xl transform rotate-[-4deg] z-30 transition-transform duration-500">
               <LensBadge
                 number={1}
@@ -167,12 +208,10 @@ export default function LensDetailPage() {
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent opacity-70" />
             </div>
-
-            {/* Dynamic SVG Connectors Overlay - Managed by Main but inside relative parent if possible */}
           </div>
         </div>
 
-        {/* Dynamic SVG Connectors Overlay - Final Positioning */}
+        {/* Dynamic SVG Connectors Overlay */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-40 opacity-50">
           {paths.map((p, i) => (
             <path
@@ -186,7 +225,7 @@ export default function LensDetailPage() {
           ))}
         </svg>
 
-        {/* RIGHT: Feature Content - Distributed to fit height */}
+        {/* RIGHT: Feature Content */}
         <div className="w-[65%] h-full flex flex-col justify-center gap-[4vh] pb-10 pr-10 z-10">
           {/* Section 1: Design */}
           <div ref={sectionRefs[0]} className="flex flex-col gap-3">
@@ -195,9 +234,12 @@ export default function LensDetailPage() {
               <span className="h-px flex-1 bg-slate-100 ml-4"></span>
             </h2>
             <ComparisonCard
-              title={design?.name || "Design"}
-              subtitle={design?.code}
-              imageSrc="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=800&auto=format&fit=crop"
+              title={lens.design_info?.name || "Design Standard"}
+              subtitle={lens.design_info?.code || "SVD"}
+              imageSrc={
+                lens.design_info?.image_url ||
+                "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=800&auto=format&fit=crop"
+              }
               overlayText="Détails"
               className="h-[18vh] min-h-[140px] max-h-[180px] w-full border-none shadow-md rounded-2xl overflow-hidden"
             />
@@ -219,8 +261,15 @@ export default function LensDetailPage() {
               />
               <ComparisonCard
                 title="Esthétisme"
-                subtitle="Indice 1.6"
-                imageSrc="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=800&auto=format&fit=crop"
+                subtitle={
+                  lens.material_info?.code
+                    ? `Indice ${lens.material_info.code}`
+                    : "Indice 1.5"
+                }
+                imageSrc={
+                  lens.material_info?.image_url ||
+                  "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=800&auto=format&fit=crop"
+                }
                 overlayText="Comparer"
                 className="h-[18vh] min-h-[140px] max-h-[180px] border-none shadow-md rounded-2xl overflow-hidden"
               />
@@ -235,9 +284,12 @@ export default function LensDetailPage() {
               <span className="h-px flex-1 bg-slate-100 ml-4"></span>
             </h2>
             <ComparisonCard
-              title="Platinium Brocode"
-              subtitle="Excellence"
-              imageSrc="https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=800&auto=format&fit=crop"
+              title={lens.treatment_info?.name || "Premium AR"}
+              subtitle={lens.treatment_info?.code || "EXC"}
+              imageSrc={
+                lens.treatment_info?.image_url ||
+                "https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=800&auto=format&fit=crop"
+              }
               overlayText="Voir plus"
               className="h-[18vh] min-h-[140px] max-h-[180px] w-full border-none shadow-md rounded-2xl overflow-hidden"
             />

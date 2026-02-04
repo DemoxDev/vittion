@@ -48,6 +48,14 @@ export const updateMaterial = (id: number, data: any) =>
 export const deleteMaterial = (id: number) =>
   apiRequest(`/materials/${id}`, "DELETE");
 
+// --- Lenses ---
+export const fetchLenses = () => apiRequest("/lenses");
+export const fetchLens = (id: number) => apiRequest(`/lenses/${id}`);
+export const createLens = (data: any) => apiRequest("/lenses", "POST", data);
+export const updateLens = (id: number, data: any) =>
+  apiRequest(`/lenses/${id}`, "PUT", data);
+export const deleteLens = (id: number) => apiRequest(`/lenses/${id}`, "DELETE");
+
 // --- Relationships ---
 export const linkProduct = (type: string, id: number, image_id: number) =>
   apiRequest("/link", "POST", { type, id, image_id });

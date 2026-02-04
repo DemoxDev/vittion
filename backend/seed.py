@@ -1,7 +1,7 @@
 import json
 import os
 from app import app
-from models import db, Image, Design, Treatment, Material
+from models import db, Image, Design, Treatment, Material, Lens
 
 # Define paths relative to the project root (mounted in Docker)
 DATA_PATH = './src/lib/data'
@@ -64,10 +64,24 @@ def seed_data():
                 )
                 db.session.add(material)
 
+        # Seed Lenses
+        with open(os.path.join(DATA_PATH, 'lenses.json'), 'r') as f:
+            lenses_data = json.load(f)
+            for l in lenses_data:
+                lens = Lens(
+                    id=l['id'],
+                    name=l['n_complet'],
+                    edi_code=l['code_edi'],
+                    design_id=l.get('design_id'),
+                    material_id=l.get('matiere_id'),
+                    treatment_id=l.get('traitement_id')
+                )
+                db.session.add(lens)
+
         db.session.commit()
         
         # Synchronize sequences for Postgres after manual ID inserts
-        for table in ['images', 'designs', 'treatments', 'materials']:
+        for table in ['images', 'designs', 'treatments', 'materials', 'lenses']:
             db.session.execute(db.text(f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), coalesce(max(id), 1), max(id) IS NOT null) FROM {table};"))
         
         db.session.commit()

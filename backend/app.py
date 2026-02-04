@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from models import db, Image, Design, Treatment, Material
+from models import db, Image, Design, Treatment, Material, Lens
 import os
 from datetime import datetime
 
@@ -176,6 +176,72 @@ def update_material(id):
 def delete_material(id):
     ent = Material.query.get_or_404(id)
     db.session.delete(ent)
+    db.session.commit()
+    return jsonify({"success": True})
+
+# --- Lenses ---
+
+@app.route('/api/lenses', methods=['GET'])
+def get_lenses():
+    lenses = Lens.query.all()
+    return jsonify([serialize(l) for l in lenses])
+
+@app.route('/api/lenses/<int:id>', methods=['GET'])
+def get_lens(id):
+    # Enriched fetch with joins
+    lens = Lens.query.get_or_404(id)
+    data = serialize(lens)
+    
+    # Manually append related info for demonstration dashboard
+    if lens.design:
+        data['design_info'] = serialize(lens.design)
+        if lens.design.image:
+            data['design_info']['image_url'] = lens.design.image.url
+            
+    if lens.material:
+        data['material_info'] = serialize(lens.material)
+        if lens.material.image:
+            data['material_info']['image_url'] = lens.material.image.url
+            
+    if lens.treatment:
+        data['treatment_info'] = serialize(lens.treatment)
+        if lens.treatment.image:
+            data['treatment_info']['image_url'] = lens.treatment.image.url
+            
+    return jsonify(data)
+
+@app.route('/api/lenses', methods=['POST'])
+def create_lens():
+    data = request.json
+    new_lens = Lens(
+        name=data.get('name'),
+        description=data.get('description'),
+        edi_code=data.get('edi_code'),
+        design_id=data.get('design_id'),
+        material_id=data.get('material_id'),
+        treatment_id=data.get('treatment_id')
+    )
+    db.session.add(new_lens)
+    db.session.commit()
+    return jsonify(serialize(new_lens)), 201
+
+@app.route('/api/lenses/<int:id>', methods=['PUT'])
+def update_lens(id):
+    lens = Lens.query.get_or_404(id)
+    data = request.json
+    lens.name = data.get('name', lens.name)
+    lens.description = data.get('description', lens.description)
+    lens.edi_code = data.get('edi_code', lens.edi_code)
+    lens.design_id = data.get('design_id', lens.design_id)
+    lens.material_id = data.get('material_id', lens.material_id)
+    lens.treatment_id = data.get('treatment_id', lens.treatment_id)
+    db.session.commit()
+    return jsonify(serialize(lens))
+
+@app.route('/api/lenses/<int:id>', methods=['DELETE'])
+def delete_lens(id):
+    lens = Lens.query.get_or_404(id)
+    db.session.delete(lens)
     db.session.commit()
     return jsonify({"success": True})
 
