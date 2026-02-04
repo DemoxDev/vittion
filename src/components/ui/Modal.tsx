@@ -7,6 +7,8 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
+  description?: string;
+  leading?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
 }
@@ -15,6 +17,8 @@ export function Modal({
   isOpen,
   onClose,
   title,
+  description,
+  leading,
   children,
   className,
 }: ModalProps) {
@@ -31,6 +35,8 @@ export function Modal({
 
   if (!isOpen) return null;
 
+  const hasHeader = title || leading;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -46,8 +52,21 @@ export function Modal({
           className,
         )}
       >
-        <div className="flex items-center justify-between p-6 border-b border-slate-100">
-          <h3 className="text-xl font-bold text-slate-900">{title}</h3>
+        <div
+          className={cn(
+            "flex items-center justify-between p-6",
+            hasHeader && "border-b border-slate-100",
+          )}
+        >
+          <div className="flex items-center gap-4">
+            {leading}
+            <div className="flex flex-col">
+              <h3 className="text-xl font-bold text-slate-900">{title}</h3>
+              {description && (
+                <p className="text-xs text-slate-500 mt-1">{description}</p>
+              )}
+            </div>
+          </div>
           <Button
             variant="ghost"
             size="icon"
