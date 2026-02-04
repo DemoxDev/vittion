@@ -13,6 +13,7 @@ const navItems = [
   { title: "Designs", href: "/dashboard/designs", icon: Palette },
   { title: "Traitements", href: "/dashboard/treatments", icon: Shapes },
   { title: "Matières", href: "/dashboard/materials", icon: Layers },
+  { title: "Verres", href: "/dashboard/lenses", icon: Shapes },
   { title: "Images", href: "/dashboard/images", icon: ImageIcon },
 ];
 

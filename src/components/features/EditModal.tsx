@@ -2,13 +2,7 @@ import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { ImagePicker } from "@/components/features/ImagePicker";
 import { Button } from "@/components/ui/button";
-import {
-  Check,
-  X,
-  Image as ImageIcon,
-  Link as LinkIcon,
-  Unlink,
-} from "lucide-react";
+import { Check, X, Image as ImageIcon, Unlink } from "lucide-react";
 import imagesData from "@/lib/data/images.json";
 
 interface EditModalProps {
@@ -16,7 +10,11 @@ interface EditModalProps {
   onClose: () => void;
   onSave: (data: any) => void;
   entity: any;
-  fields: { key: string; label: string; type: "text" | "textarea" }[];
+  fields: {
+    key: string;
+    label: string;
+    type: "text" | "textarea" | "number";
+  }[];
 }
 
 export function EditModal({
@@ -69,13 +67,19 @@ export function EditModal({
                     />
                   ) : (
                     <input
-                      type="text"
+                      type={field.type === "number" ? "number" : "text"}
+                      step={field.type === "number" ? "1" : undefined}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/10 transition-all"
                       value={formData[field.key] || ""}
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          [field.key]: e.target.value,
+                          [field.key]:
+                            field.type === "number"
+                              ? e.target.value === ""
+                                ? null
+                                : parseInt(e.target.value)
+                              : e.target.value,
                         })
                       }
                     />

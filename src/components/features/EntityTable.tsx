@@ -25,6 +25,7 @@ interface EntityTableProps<T> {
   onDelete?: (item: T) => void;
   onView?: (item: T) => void;
   searchPlaceholder?: string;
+  isLoading?: boolean;
 }
 
 export function EntityTable<T extends { id: string | number }>({
@@ -35,6 +36,7 @@ export function EntityTable<T extends { id: string | number }>({
   onDelete,
   onView,
   searchPlaceholder = "Rechercher...",
+  isLoading = false,
 }: EntityTableProps<T>) {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -97,69 +99,82 @@ export function EntityTable<T extends { id: string | number }>({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {paginatedData.map((item) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-slate-50/50 transition-colors group"
-                >
-                  {columns.map((col, i) => (
-                    <td
-                      key={i}
-                      className={cn(
-                        "px-6 py-4 text-sm text-slate-600",
-                        col.className,
-                      )}
+              {isLoading
+                ? [...Array(5)].map((_, i) => (
+                    <tr key={i} className="animate-pulse">
+                      {columns.map((_, j) => (
+                        <td key={j} className="px-6 py-4">
+                          <div className="h-4 bg-slate-100 rounded w-full" />
+                        </td>
+                      ))}
+                      <td className="px-6 py-4 text-right">
+                        <div className="h-4 bg-slate-100 rounded w-8 ml-auto" />
+                      </td>
+                    </tr>
+                  ))
+                : paginatedData.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="hover:bg-slate-50/50 transition-colors group"
                     >
-                      {typeof col.accessor === "function"
-                        ? col.accessor(item)
-                        : (item[col.accessor] as React.ReactNode)}
-                    </td>
+                      {columns.map((col, i) => (
+                        <td
+                          key={i}
+                          className={cn(
+                            "px-6 py-4 text-sm text-slate-600",
+                            col.className,
+                          )}
+                        >
+                          {typeof col.accessor === "function"
+                            ? col.accessor(item)
+                            : (item[col.accessor] as React.ReactNode)}
+                        </td>
+                      ))}
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end items-center gap-1">
+                          {onView && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => onView(item)}
+                              className="h-8 w-8 text-slate-400 hover:text-blue-600 rounded-lg"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </Button>
+                          )}
+                          {onEdit && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => onEdit(item)}
+                              className="h-8 w-8 text-slate-400 hover:text-emerald-600 rounded-lg"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          )}
+                          {onDelete && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => onDelete(item)}
+                              className="h-8 w-8 text-slate-400 hover:text-rose-600 rounded-lg"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                          {!onView && !onEdit && !onDelete && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-slate-400 rounded-lg"
+                            >
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
                   ))}
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end items-center gap-1">
-                      {onView && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onView(item)}
-                          className="h-8 w-8 text-slate-400 hover:text-blue-600 rounded-lg"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </Button>
-                      )}
-                      {onEdit && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onEdit(item)}
-                          className="h-8 w-8 text-slate-400 hover:text-emerald-600 rounded-lg"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      )}
-                      {onDelete && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onDelete(item)}
-                          className="h-8 w-8 text-slate-400 hover:text-rose-600 rounded-lg"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
-                      {!onView && !onEdit && !onDelete && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-slate-400 rounded-lg"
-                        >
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
             </tbody>
           </table>
         </div>
