@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "code_edi": "123456",
+    "n_complet": "General Vision 1.5 AR",
+    "design_id": 1,
+    "matiere_id": 1,
+    "traitement_id": 1
+  },
+  {
+    "id": 2,
+    "code_edi": "789012",
+    "n_complet": "Pro Digital 1.6 BlueCut",
+    "design_id": 2,
+    "matiere_id": 2,
+    "traitement_id": 2
+  }
+]

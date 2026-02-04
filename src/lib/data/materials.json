@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "code": "1.5",
+    "name": "Standard 1.5",
+    "description": "Standard thickness lens material.\n- Economic choice\n- Good optical clarity"
+  },
+  {
+    "id": 2,
+    "code": "1.6",
+    "name": "Thin 1.6",
+    "description": "Thinner and lighter material.\n- More durable\n- UV protection included"
+  }
+]

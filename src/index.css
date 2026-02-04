@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-blue: #008bd0;
+  --color-dark-slate: #0f172a;
+  --color-light-blue-bg: #e0f0ff;
+  --color-success-green: #4caf50;
+  --color-warning-orange: #ff6d00;
+  --color-purple: #9c27b0;
+
+  --font-sans: Inter, system-ui, sans-serif;
+}
+
+:root {
+  font-family: var(--font-sans);
+  background-color: #f8fafc;
+  color: var(--color-dark-slate);
+}

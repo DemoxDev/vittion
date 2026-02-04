@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "code": "GEN",
+    "name": "General Vision",
+    "description": "Standard single vision lens for everyday use.\n- High clarity\n- Durable material\n- Suitable for all prescriptions",
+    "default_image_id": 101
+  },
+  {
+    "id": 2,
+    "code": "PRO",
+    "name": "Pro Digital",
+    "description": "Optimized for digital screens and office work.\n- Blue light reduction\n- Enhanced contrast\n- Reduced eye strain",
+    "default_image_id": 102
+  },
+  {
+    "id": 3,
+    "code": "DRIVE",
+    "name": "Drive Master",
+    "description": "Specialized lens for driving conditions.\n- Glare reduction\n- Night vision enhancement\n- Wide field of view",
+    "default_image_id": 103
+  }
+]
