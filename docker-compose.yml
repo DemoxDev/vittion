@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: nextvision-db
+    restart: always
+    environment:
+      - POSTGRES_USER=nextvision
+      - POSTGRES_PASSWORD=nextvision
+      - POSTGRES_DB=nextvision
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nextvision -d nextvision"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+      network: host
+    container_name: nextvision-backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://nextvision:nextvision@db:5432/nextvision
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - ./src/lib/data:/app/src/lib/data
+
+volumes:
+  postgres_data:

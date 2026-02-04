@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,12 @@ import {
   X,
   AlertTriangle,
 } from "lucide-react";
-import designsData from "@/lib/data/designs.json";
-import treatmentsData from "@/lib/data/treatments.json";
-import materialsData from "@/lib/data/materials.json";
+import {
+  fetchDesigns,
+  fetchTreatments,
+  fetchMaterials,
+  unlinkProduct,
+} from "@/lib/api";
 
 interface ImageDetailModalProps {
   isOpen: boolean;
@@ -46,15 +49,34 @@ export function ImageDetailModal({
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [unlinkingProduct, setUnlinkingProduct] = useState<any>(null);
 
-  const [localDesigns, setLocalDesigns] = useState<Entity[]>(
-    designsData as Entity[],
-  );
-  const [localTreatments, setLocalTreatments] = useState<Entity[]>(
-    treatmentsData as Entity[],
-  );
-  const [localMaterials, setLocalMaterials] = useState<Entity[]>(
-    materialsData as Entity[],
-  );
+  const [localDesigns, setLocalDesigns] = useState<Entity[]>([]);
+  const [localTreatments, setLocalTreatments] = useState<Entity[]>([]);
+  const [localMaterials, setLocalMaterials] = useState<Entity[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch associations from API
+  const loadAssociations = async () => {
+    if (!isOpen || !image) return;
+    setIsLoading(true);
+    try {
+      const [designs, treatments, materials] = await Promise.all([
+        fetchDesigns(),
+        fetchTreatments(),
+        fetchMaterials(),
+      ]);
+      setLocalDesigns(designs);
+      setLocalTreatments(treatments);
+      setLocalMaterials(materials);
+    } catch (error) {
+      console.error("Failed to load associations:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAssociations();
+  }, [isOpen, image?.id]);
 
   if (!image) return null;
 
@@ -71,7 +93,8 @@ export function ImageDetailModal({
     associatedTreatments.length > 0 ||
     associatedMaterials.length > 0;
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return "N/A";
     return new Date(dateStr).toLocaleDateString("fr-FR", {
       day: "numeric",
       month: "long",
@@ -89,23 +112,18 @@ export function ImageDetailModal({
     setView("confirm-unlink");
   };
 
-  const handleConfirmUnlink = () => {
+  const handleConfirmUnlink = async () => {
     const { id, type } = unlinkingProduct;
-    if (type === "Design") {
-      setLocalDesigns((prev) =>
-        prev.map((d) => (d.id === id ? { ...d, image_id: null } : d)),
-      );
-    } else if (type === "Traitement") {
-      setLocalTreatments((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, image_id: null } : t)),
-      );
-    } else if (type === "Matière") {
-      setLocalMaterials((prev) =>
-        prev.map((m) => (m.id === id ? { ...m, image_id: null } : m)),
-      );
+    try {
+      await unlinkProduct(type, id);
+      // Reload associations from server after success
+      await loadAssociations();
+      setView("details");
+      setUnlinkingProduct(null);
+    } catch (error) {
+      console.error("Failed to unlink:", error);
+      alert("Une erreur est survenue lors de la désassociation.");
     }
-    setView("details");
-    setUnlinkingProduct(null);
   };
 
   const handleBack = () => {
@@ -216,7 +234,7 @@ export function ImageDetailModal({
           <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
             Produits Associés
           </h4>
-          {!hasAssociations && (
+          {!hasAssociations && !isLoading && (
             <Badge
               variant="outline"
               className="text-slate-400 border-slate-200 text-[10px]"
@@ -227,68 +245,78 @@ export function ImageDetailModal({
         </div>
 
         <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-          {associatedDesigns.length > 0 && (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
-                <Palette className="w-4 h-4 text-blue-500" /> Designs
-              </div>
-              {associatedDesigns.map((d) => (
-                <AssociationItem
-                  key={d.id}
-                  title={d.name || d.code}
-                  code={d.code}
-                  type="Design"
-                  onEdit={() => handleEdit(d, "Design")}
-                  onUnlink={() => handleUnlinkRequest(d, "Design")}
-                />
-              ))}
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
             </div>
-          )}
+          ) : (
+            <>
+              {associatedDesigns.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
+                    <Palette className="w-4 h-4 text-blue-500" /> Designs
+                  </div>
+                  {associatedDesigns.map((d) => (
+                    <AssociationItem
+                      key={d.id}
+                      title={d.name || d.code}
+                      code={d.code}
+                      type="Design"
+                      onEdit={() => handleEdit(d, "Design")}
+                      onUnlink={() => handleUnlinkRequest(d, "Design")}
+                    />
+                  ))}
+                </div>
+              )}
 
-          {associatedTreatments.length > 0 && (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
-                <Shapes className="w-4 h-4 text-orange-500" /> Traitements
-              </div>
-              {associatedTreatments.map((t) => (
-                <AssociationItem
-                  key={t.id}
-                  title={t.name || t.code}
-                  code={t.code}
-                  type="Traitement"
-                  onEdit={() => handleEdit(t, "Traitement")}
-                  onUnlink={() => handleUnlinkRequest(t, "Traitement")}
-                />
-              ))}
-            </div>
-          )}
+              {associatedTreatments.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
+                    <Shapes className="w-4 h-4 text-orange-500" /> Traitements
+                  </div>
+                  {associatedTreatments.map((t) => (
+                    <AssociationItem
+                      key={t.id}
+                      title={t.name || t.code}
+                      code={t.code}
+                      type="Traitement"
+                      onEdit={() => handleEdit(t, "Traitement")}
+                      onUnlink={() => handleUnlinkRequest(t, "Traitement")}
+                    />
+                  ))}
+                </div>
+              )}
 
-          {associatedMaterials.length > 0 && (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
-                <Layers className="w-4 h-4 text-emerald-500" /> Matières
-              </div>
-              {associatedMaterials.map((m) => (
-                <AssociationItem
-                  key={m.id}
-                  title={m.name || m.code}
-                  code={m.code}
-                  type="Matière"
-                  onEdit={() => handleEdit(m, "Matière")}
-                  onUnlink={() => handleUnlinkRequest(m, "Matière")}
-                />
-              ))}
-            </div>
-          )}
+              {associatedMaterials.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
+                    <Layers className="w-4 h-4 text-emerald-500" /> Matières
+                  </div>
+                  {associatedMaterials.map((m) => (
+                    <AssociationItem
+                      key={m.id}
+                      title={m.name || m.code}
+                      code={m.code}
+                      type="Matière"
+                      onEdit={() => handleEdit(m, "Matière")}
+                      onUnlink={() => handleUnlinkRequest(m, "Matière")}
+                    />
+                  ))}
+                </div>
+              )}
 
-          {!hasAssociations && (
-            <div className="flex flex-col items-center justify-center py-12 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
-              <Link2Off className="w-8 h-8 text-slate-300 mb-3" />
-              <p className="text-sm text-slate-500">Aucun produit associé</p>
-              <p className="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-wider">
-                Asset disponible pour liaison
-              </p>
-            </div>
+              {!hasAssociations && !isLoading && (
+                <div className="flex flex-col items-center justify-center py-12 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+                  <Link2Off className="w-8 h-8 text-slate-300 mb-3" />
+                  <p className="text-sm text-slate-500">
+                    Aucun produit associé
+                  </p>
+                  <p className="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-wider">
+                    Asset disponible pour liaison
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
