@@ -193,13 +193,13 @@ export default function LensDetailPage() {
       >
         {/* LEFT: Lens Pillar - Anchored Bottom Left with Overlap */}
         <div className="w-[35%] h-full relative pointer-events-none select-none overflow-visible hidden lg:block">
-          <div className="absolute bottom-[-5%] left-[-40px] w-full h-[85%]">
+          <div className="absolute bottom-[-5%] left-[-40px] w-full h-[85%] transform-gpu origin-bottom-left transition-transform duration-500 lg:scale-[0.65] xl:scale-[0.8] 2xl:scale-100">
             {/* Layer 3: Treatment (Back-most / Bottom) */}
             <div
               onMouseEnter={() => setHoveredIndex(2)}
               onMouseLeave={() => setHoveredIndex(null)}
               className={cn(
-                "absolute bottom-[0%] left-[0%] w-[540px] h-[400px] bg-gradient-to-br from-purple-200/80 via-purple-100/60 to-purple-50/30 border border-purple-300/40 rounded-[5rem_5rem_8rem_4rem] backdrop-blur-md shadow-2xl transform rotate-[-3deg] z-10 transition-all duration-500 pointer-events-auto cursor-pointer",
+                "absolute bottom-[-10%] left-[0%] w-[540px] h-[400px] bg-gradient-to-br from-purple-200/80 via-purple-100/60 to-purple-50/30 border border-purple-300/40 rounded-[5rem_5rem_8rem_4rem] backdrop-blur-md shadow-2xl transform rotate-[-3deg] z-10 transition-all duration-500 pointer-events-auto cursor-pointer",
                 hoveredIndex === 2 &&
                   "scale-[1.03] rotate-[-2deg] from-purple-300/90 via-purple-200/80 to-purple-100/50 border-purple-400/60 shadow-purple-200/40",
               )}
@@ -220,7 +220,7 @@ export default function LensDetailPage() {
               onMouseEnter={() => setHoveredIndex(1)}
               onMouseLeave={() => setHoveredIndex(null)}
               className={cn(
-                "absolute bottom-[25%] left-[-80px] w-[520px] h-[400px] bg-gradient-to-br from-green-200/80 via-green-100/60 to-green-50/30 border border-green-300/40 rounded-[4rem_7rem_6rem_5rem] backdrop-blur-md shadow-2xl transform rotate-[2deg] z-20 transition-all duration-500 pointer-events-auto cursor-pointer",
+                "absolute bottom-[10%] left-[-80px] w-[520px] h-[400px] bg-gradient-to-br from-green-200/80 via-green-100/60 to-green-50/30 border border-green-300/40 rounded-[4rem_7rem_6rem_5rem] backdrop-blur-md shadow-2xl transform rotate-[2deg] z-20 transition-all duration-500 pointer-events-auto cursor-pointer",
                 hoveredIndex === 1 &&
                   "scale-[1.03] rotate-[3deg] from-green-300/90 via-green-200/80 to-green-100/50 border-green-400/60 shadow-green-200/40",
               )}
@@ -241,7 +241,7 @@ export default function LensDetailPage() {
               onMouseEnter={() => setHoveredIndex(0)}
               onMouseLeave={() => setHoveredIndex(null)}
               className={cn(
-                "absolute bottom-[50%] left-[-120px] w-[500px] h-[400px] bg-gradient-to-br from-blue-300/90 via-blue-200/70 to-blue-100/40 border border-blue-400/50 rounded-[6rem_4rem_5rem_7rem] backdrop-blur-md shadow-2xl transform rotate-[-4deg] z-30 transition-all duration-500 pointer-events-auto cursor-pointer",
+                "absolute bottom-[30%] left-[-120px] w-[500px] h-[400px] bg-gradient-to-br from-blue-300/90 via-blue-200/70 to-blue-100/40 border border-blue-400/50 rounded-[6rem_4rem_5rem_7rem] backdrop-blur-md shadow-2xl transform rotate-[-4deg] z-30 transition-all duration-500 pointer-events-auto cursor-pointer",
                 hoveredIndex === 0 &&
                   "scale-[1.03] rotate-[-3deg] from-blue-400/95 via-blue-300/80 to-blue-200/50 border-blue-500/70 shadow-blue-200/40",
               )}
