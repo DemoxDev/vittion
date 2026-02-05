@@ -152,7 +152,7 @@ export default function LensDetailPage() {
   return (
     <div className="h-screen w-screen bg-white flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="px-10 pt-8 pb-4 flex-shrink-0 z-50">
+      <header className="px-6 md:px-10 pt-6 md:pt-8 pb-4 flex-shrink-0 z-50">
         <Link
           to="/dashboard"
           className="inline-flex items-center text-slate-400 hover:text-slate-700 text-sm mb-3 transition"
@@ -192,7 +192,7 @@ export default function LensDetailPage() {
         className="flex-1 flex relative px-10 items-end pb-0 overflow-hidden"
       >
         {/* LEFT: Lens Pillar - Anchored Bottom Left with Overlap */}
-        <div className="w-[35%] h-full relative pointer-events-none select-none overflow-visible">
+        <div className="w-[35%] h-full relative pointer-events-none select-none overflow-visible hidden lg:block">
           <div className="absolute bottom-[-5%] left-[-40px] w-full h-[85%]">
             {/* Layer 3: Treatment (Back-most / Bottom) */}
             <div
@@ -210,7 +210,7 @@ export default function LensDetailPage() {
                 isHovered={hoveredIndex === 2}
                 onMouseEnter={() => setHoveredIndex(2)}
                 onMouseLeave={() => setHoveredIndex(null)}
-                className="absolute right-0 top-12 transform translate-x-1/2 -translate-y-1/2"
+                className="absolute right-0 top-12 transform translate-x-1/2 -translate-y-1/2 hidden lg:flex"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-white/30 to-transparent opacity-60" />
             </div>
@@ -231,7 +231,7 @@ export default function LensDetailPage() {
                 isHovered={hoveredIndex === 1}
                 onMouseEnter={() => setHoveredIndex(1)}
                 onMouseLeave={() => setHoveredIndex(null)}
-                className="absolute right-0 top-12 transform translate-x-1/2 -translate-y-1/2"
+                className="absolute right-0 top-12 transform translate-x-1/2 -translate-y-1/2 hidden lg:flex"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-40" />
             </div>
@@ -252,7 +252,7 @@ export default function LensDetailPage() {
                 isHovered={hoveredIndex === 0}
                 onMouseEnter={() => setHoveredIndex(0)}
                 onMouseLeave={() => setHoveredIndex(null)}
-                className="absolute right-0 top-12 transform translate-x-1/2 -translate-y-1/2"
+                className="absolute right-0 top-12 transform translate-x-1/2 -translate-y-1/2 hidden lg:flex"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent opacity-70" />
             </div>
@@ -260,7 +260,7 @@ export default function LensDetailPage() {
         </div>
 
         {/* Dynamic SVG Connectors Overlay */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-5">
+        <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-5 hidden lg:block">
           {paths.map((p, i) => (
             <path
               key={i}
@@ -278,7 +278,7 @@ export default function LensDetailPage() {
         </svg>
 
         {/* RIGHT: Feature Content */}
-        <div className="w-[65%] h-full flex flex-col justify-center gap-[4vh] pb-10 pr-10 z-10">
+        <div className="w-full lg:w-[65%] h-full flex flex-col justify-center gap-[4vh] pb-10 pr-10 z-10">
           {/* Section 1: Design */}
           <div
             ref={sectionRefs[0]}
