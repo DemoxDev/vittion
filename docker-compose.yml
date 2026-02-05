@@ -36,7 +36,10 @@ services:
       - ./src/lib/data:/app/src/lib/data
 
   frontend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: host
     container_name: vittion-frontend
     restart: always
     ports:
