@@ -260,7 +260,7 @@ export default function LensDetailPage() {
         </div>
 
         {/* Dynamic SVG Connectors Overlay */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-40">
+        <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-5">
           {paths.map((p, i) => (
             <path
               key={i}
