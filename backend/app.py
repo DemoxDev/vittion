@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from models import db, Image, Design, Treatment, Material, Lens
+from auth import auth_bp, require_auth
 import os
 from datetime import datetime
 from dotenv import load_dotenv
@@ -8,7 +9,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins=[
+    'http://localhost:5173',
+    'http://localhost:3000',
+    os.getenv('FRONTEND_URL', 'http://localhost:5173')
+])
+
+# Register auth blueprint
+app.register_blueprint(auth_bp)
 
 # Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://vittion:vittion@db:5432/vittion')
@@ -29,16 +37,19 @@ def serialize(obj):
     return data
 
 @app.route('/api/images', methods=['GET'])
+@require_auth
 def get_images():
     images = Image.query.all()
     return jsonify([serialize(img) for img in images])
 
 @app.route('/api/images/<int:id>', methods=['GET'])
+@require_auth
 def get_image(id):
     image = Image.query.get_or_404(id)
     return jsonify(serialize(image))
 
 @app.route('/api/images', methods=['POST'])
+@require_auth
 def create_image():
     data = request.json
     new_img = Image(
@@ -52,6 +63,7 @@ def create_image():
     return jsonify(serialize(new_img)), 201
 
 @app.route('/api/images/<int:id>', methods=['PUT'])
+@require_auth
 def update_image(id):
     image = Image.query.get_or_404(id)
     data = request.json
@@ -63,6 +75,7 @@ def update_image(id):
     return jsonify(serialize(image))
 
 @app.route('/api/images/<int:id>', methods=['DELETE'])
+@require_auth
 def delete_image(id):
     image = Image.query.get_or_404(id)
     db.session.delete(image)
@@ -78,10 +91,12 @@ def get_entity_model(model_type):
     return None
 
 @app.route('/api/designs', methods=['GET'])
+@require_auth
 def get_designs():
     return jsonify([serialize(d) for d in Design.query.all()])
 
 @app.route('/api/designs', methods=['POST'])
+@require_auth
 def create_design():
     data = request.json
     new_ent = Design(
@@ -95,6 +110,7 @@ def create_design():
     return jsonify(serialize(new_ent)), 201
 
 @app.route('/api/designs/<int:id>', methods=['PUT'])
+@require_auth
 def update_design(id):
     ent = Design.query.get_or_404(id)
     data = request.json
@@ -106,6 +122,7 @@ def update_design(id):
     return jsonify(serialize(ent))
 
 @app.route('/api/designs/<int:id>', methods=['DELETE'])
+@require_auth
 def delete_design(id):
     ent = Design.query.get_or_404(id)
     db.session.delete(ent)
@@ -113,10 +130,12 @@ def delete_design(id):
     return jsonify({"success": True})
 
 @app.route('/api/treatments', methods=['GET'])
+@require_auth
 def get_treatments():
     return jsonify([serialize(t) for t in Treatment.query.all()])
 
 @app.route('/api/treatments', methods=['POST'])
+@require_auth
 def create_treatment():
     data = request.json
     new_ent = Treatment(
@@ -130,6 +149,7 @@ def create_treatment():
     return jsonify(serialize(new_ent)), 201
 
 @app.route('/api/treatments/<int:id>', methods=['PUT'])
+@require_auth
 def update_treatment(id):
     ent = Treatment.query.get_or_404(id)
     data = request.json
@@ -141,6 +161,7 @@ def update_treatment(id):
     return jsonify(serialize(ent))
 
 @app.route('/api/treatments/<int:id>', methods=['DELETE'])
+@require_auth
 def delete_treatment(id):
     ent = Treatment.query.get_or_404(id)
     db.session.delete(ent)
@@ -148,10 +169,12 @@ def delete_treatment(id):
     return jsonify({"success": True})
 
 @app.route('/api/materials', methods=['GET'])
+@require_auth
 def get_materials():
     return jsonify([serialize(m) for m in Material.query.all()])
 
 @app.route('/api/materials', methods=['POST'])
+@require_auth
 def create_material():
     data = request.json
     new_ent = Material(
@@ -165,6 +188,7 @@ def create_material():
     return jsonify(serialize(new_ent)), 201
 
 @app.route('/api/materials/<int:id>', methods=['PUT'])
+@require_auth
 def update_material(id):
     ent = Material.query.get_or_404(id)
     data = request.json
@@ -176,6 +200,7 @@ def update_material(id):
     return jsonify(serialize(ent))
 
 @app.route('/api/materials/<int:id>', methods=['DELETE'])
+@require_auth
 def delete_material(id):
     ent = Material.query.get_or_404(id)
     db.session.delete(ent)
@@ -214,6 +239,7 @@ def get_lens(id):
     return jsonify(data)
 
 @app.route('/api/lenses', methods=['POST'])
+@require_auth
 def create_lens():
     data = request.json
     new_lens = Lens(
@@ -229,6 +255,7 @@ def create_lens():
     return jsonify(serialize(new_lens)), 201
 
 @app.route('/api/lenses/<int:id>', methods=['PUT'])
+@require_auth
 def update_lens(id):
     lens = Lens.query.get_or_404(id)
     data = request.json
@@ -242,6 +269,7 @@ def update_lens(id):
     return jsonify(serialize(lens))
 
 @app.route('/api/lenses/<int:id>', methods=['DELETE'])
+@require_auth
 def delete_lens(id):
     lens = Lens.query.get_or_404(id)
     db.session.delete(lens)
@@ -251,6 +279,7 @@ def delete_lens(id):
 # --- Relationship Management ---
 
 @app.route('/api/link', methods=['POST'])
+@require_auth
 def link_image():
     data = request.json
     entity_type = data.get('type')
@@ -270,6 +299,7 @@ def link_image():
     return jsonify({"success": True})
 
 @app.route('/api/unlink', methods=['POST'])
+@require_auth
 def unlink_image():
     data = request.json
     entity_type = data.get('type')

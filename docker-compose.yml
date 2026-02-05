@@ -16,7 +16,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
       network: host
@@ -26,6 +26,13 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - FLASK_ENV=${FLASK_ENV}
       - FLASK_APP=${FLASK_APP}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - GITHUB_REDIRECT_URI=${GITHUB_REDIRECT_URI}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_ACCESS_TOKEN_EXPIRES=${JWT_ACCESS_TOKEN_EXPIRES}
+      - JWT_REFRESH_TOKEN_EXPIRES=${JWT_REFRESH_TOKEN_EXPIRES}
+      - FRONTEND_URL=${FRONTEND_URL}
     ports:
       - "5000:5000"
     depends_on:
