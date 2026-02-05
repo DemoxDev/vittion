@@ -10,14 +10,28 @@ interface LensBadgeProps {
   number: number;
   className?: string;
   badgeRef?: React.RefObject<HTMLDivElement | null>;
+  isHovered?: boolean;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
-function LensBadge({ number, className, badgeRef }: LensBadgeProps) {
+function LensBadge({
+  number,
+  className,
+  badgeRef,
+  isHovered,
+  onMouseEnter,
+  onMouseLeave,
+}: LensBadgeProps) {
   return (
     <div
       ref={badgeRef}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={cn(
-        "w-10 h-10 bg-black text-white rounded-full flex items-center justify-center text-lg font-bold border-4 border-white shadow-lg",
+        "w-10 h-10 bg-black text-white rounded-full flex items-center justify-center text-lg font-bold border-4 border-white shadow-lg transition-all duration-300 cursor-pointer pointer-events-auto",
+        isHovered &&
+          "scale-125 bg-blue-600 border-blue-100 shadow-blue-200/50 shadow-2xl",
         className,
       )}
     >
@@ -31,6 +45,7 @@ export default function LensDetailPage() {
   const [lens, setLens] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // Refs for positioning the connectors
   const containerRef = useRef<HTMLDivElement>(null);
@@ -180,30 +195,63 @@ export default function LensDetailPage() {
         <div className="w-[35%] h-full relative pointer-events-none select-none overflow-visible">
           <div className="absolute bottom-[-5%] left-[-40px] w-full h-[85%]">
             {/* Layer 3: Treatment (Back-most / Bottom) */}
-            <div className="absolute bottom-[0%] left-[0%] w-[540px] h-[400px] bg-gradient-to-br from-purple-200/80 via-purple-100/60 to-purple-50/30 border border-purple-300/40 rounded-[5rem_5rem_8rem_4rem] backdrop-blur-md shadow-2xl transform rotate-[-3deg] z-10 transition-transform duration-500">
+            <div
+              onMouseEnter={() => setHoveredIndex(2)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              className={cn(
+                "absolute bottom-[0%] left-[0%] w-[540px] h-[400px] bg-gradient-to-br from-purple-200/80 via-purple-100/60 to-purple-50/30 border border-purple-300/40 rounded-[5rem_5rem_8rem_4rem] backdrop-blur-md shadow-2xl transform rotate-[-3deg] z-10 transition-all duration-500 pointer-events-auto cursor-pointer",
+                hoveredIndex === 2 &&
+                  "scale-[1.03] rotate-[-2deg] from-purple-300/90 via-purple-200/80 to-purple-100/50 border-purple-400/60 shadow-purple-200/40",
+              )}
+            >
               <LensBadge
                 number={3}
                 badgeRef={badgeRefs[2]}
+                isHovered={hoveredIndex === 2}
+                onMouseEnter={() => setHoveredIndex(2)}
+                onMouseLeave={() => setHoveredIndex(null)}
                 className="absolute right-0 top-12 transform translate-x-1/2 -translate-y-1/2"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-white/30 to-transparent opacity-60" />
             </div>
 
             {/* Layer 2: Material (Middle / Center) */}
-            <div className="absolute bottom-[25%] left-[-80px] w-[520px] h-[400px] bg-gradient-to-br from-green-200/80 via-green-100/60 to-green-50/30 border border-green-300/40 rounded-[4rem_7rem_6rem_5rem] backdrop-blur-md shadow-2xl transform rotate-[2deg] z-20 transition-transform duration-500">
+            <div
+              onMouseEnter={() => setHoveredIndex(1)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              className={cn(
+                "absolute bottom-[25%] left-[-80px] w-[520px] h-[400px] bg-gradient-to-br from-green-200/80 via-green-100/60 to-green-50/30 border border-green-300/40 rounded-[4rem_7rem_6rem_5rem] backdrop-blur-md shadow-2xl transform rotate-[2deg] z-20 transition-all duration-500 pointer-events-auto cursor-pointer",
+                hoveredIndex === 1 &&
+                  "scale-[1.03] rotate-[3deg] from-green-300/90 via-green-200/80 to-green-100/50 border-green-400/60 shadow-green-200/40",
+              )}
+            >
               <LensBadge
                 number={2}
                 badgeRef={badgeRefs[1]}
+                isHovered={hoveredIndex === 1}
+                onMouseEnter={() => setHoveredIndex(1)}
+                onMouseLeave={() => setHoveredIndex(null)}
                 className="absolute right-0 top-12 transform translate-x-1/2 -translate-y-1/2"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-40" />
             </div>
 
             {/* Layer 1: Design (Front-most / Top) */}
-            <div className="absolute bottom-[50%] left-[-120px] w-[500px] h-[400px] bg-gradient-to-br from-blue-300/90 via-blue-200/70 to-blue-100/40 border border-blue-400/50 rounded-[6rem_4rem_5rem_7rem] backdrop-blur-md shadow-2xl transform rotate-[-4deg] z-30 transition-transform duration-500">
+            <div
+              onMouseEnter={() => setHoveredIndex(0)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              className={cn(
+                "absolute bottom-[50%] left-[-120px] w-[500px] h-[400px] bg-gradient-to-br from-blue-300/90 via-blue-200/70 to-blue-100/40 border border-blue-400/50 rounded-[6rem_4rem_5rem_7rem] backdrop-blur-md shadow-2xl transform rotate-[-4deg] z-30 transition-all duration-500 pointer-events-auto cursor-pointer",
+                hoveredIndex === 0 &&
+                  "scale-[1.03] rotate-[-3deg] from-blue-400/95 via-blue-300/80 to-blue-200/50 border-blue-500/70 shadow-blue-200/40",
+              )}
+            >
               <LensBadge
                 number={1}
                 badgeRef={badgeRefs[0]}
+                isHovered={hoveredIndex === 0}
+                onMouseEnter={() => setHoveredIndex(0)}
+                onMouseLeave={() => setHoveredIndex(null)}
                 className="absolute right-0 top-12 transform translate-x-1/2 -translate-y-1/2"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent opacity-70" />
@@ -212,15 +260,19 @@ export default function LensDetailPage() {
         </div>
 
         {/* Dynamic SVG Connectors Overlay */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-40 opacity-50">
+        <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-40">
           {paths.map((p, i) => (
             <path
               key={i}
               d={p}
               fill="none"
-              stroke="#64748b"
-              strokeWidth="2.5"
-              strokeDasharray="6 6"
+              stroke={hoveredIndex === i ? "#3b82f6" : "#64748b"}
+              strokeWidth={hoveredIndex === i ? "4" : "2.5"}
+              strokeDasharray={hoveredIndex === i ? "" : "6 6"}
+              className="transition-all duration-300"
+              opacity={
+                hoveredIndex === null || hoveredIndex === i ? "0.6" : "0.2"
+              }
             />
           ))}
         </svg>
@@ -228,14 +280,39 @@ export default function LensDetailPage() {
         {/* RIGHT: Feature Content */}
         <div className="w-[65%] h-full flex flex-col justify-center gap-[4vh] pb-10 pr-10 z-10">
           {/* Section 1: Design */}
-          <div ref={sectionRefs[0]} className="flex flex-col gap-3">
+          <div
+            ref={sectionRefs[0]}
+            onMouseEnter={() => setHoveredIndex(0)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            className={cn(
+              "flex flex-col gap-3 p-4 -m-4 rounded-3xl transition-all duration-300",
+              hoveredIndex === 0 &&
+                "bg-blue-50/50 shadow-sm ring-1 ring-blue-100/50",
+            )}
+          >
             <h2 className="text-xl font-bold text-slate-800 flex items-center gap-3">
-              <span className="text-slate-300 font-normal">1.</span> Le design
-              <span className="h-px flex-1 bg-slate-100 ml-4"></span>
+              <span
+                className={cn(
+                  "transition-colors duration-300",
+                  hoveredIndex === 0
+                    ? "text-blue-600"
+                    : "text-slate-300 font-normal",
+                )}
+              >
+                1.
+              </span>{" "}
+              Le design
+              <span
+                className={cn(
+                  "h-px flex-1 ml-4 transition-colors duration-300",
+                  hoveredIndex === 0 ? "bg-blue-200" : "bg-slate-100",
+                )}
+              ></span>
             </h2>
             <ComparisonCard
               title={lens.design_info?.name || "Design Standard"}
               subtitle={lens.design_info?.code || "SVD"}
+              isHighlighted={hoveredIndex === 0}
               imageSrc={
                 lens.design_info?.image_url ||
                 "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=800&auto=format&fit=crop"
@@ -246,15 +323,40 @@ export default function LensDetailPage() {
           </div>
 
           {/* Section 2: Material */}
-          <div ref={sectionRefs[1]} className="flex flex-col gap-3">
+          <div
+            ref={sectionRefs[1]}
+            onMouseEnter={() => setHoveredIndex(1)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            className={cn(
+              "flex flex-col gap-3 p-4 -m-4 rounded-3xl transition-all duration-300",
+              hoveredIndex === 1 &&
+                "bg-green-50/50 shadow-sm ring-1 ring-green-100/50",
+            )}
+          >
             <h2 className="text-xl font-bold text-slate-800 flex items-center gap-3">
-              <span className="text-slate-300 font-normal">2.</span> La matière
-              <span className="h-px flex-1 bg-slate-100 ml-4"></span>
+              <span
+                className={cn(
+                  "transition-colors duration-300",
+                  hoveredIndex === 1
+                    ? "text-green-600"
+                    : "text-slate-300 font-normal",
+                )}
+              >
+                2.
+              </span>{" "}
+              La matière
+              <span
+                className={cn(
+                  "h-px flex-1 ml-4 transition-colors duration-300",
+                  hoveredIndex === 1 ? "bg-green-200" : "bg-slate-100",
+                )}
+              ></span>
             </h2>
             <div className="grid grid-cols-2 gap-6">
               <ComparisonCard
                 title="Protection"
                 subtitle="BlueGuard"
+                isHighlighted={hoveredIndex === 1}
                 imageSrc="https://images.unsplash.com/photo-1570222094114-28a9d8896c74?q=80&w=800&auto=format&fit=crop"
                 overlayText="Savoir plus"
                 className="h-[18vh] min-h-[140px] max-h-[180px] border-none shadow-md rounded-2xl overflow-hidden"
@@ -266,6 +368,7 @@ export default function LensDetailPage() {
                     ? `Indice ${lens.material_info.code}`
                     : "Indice 1.5"
                 }
+                isHighlighted={hoveredIndex === 1}
                 imageSrc={
                   lens.material_info?.image_url ||
                   "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=800&auto=format&fit=crop"
@@ -277,15 +380,39 @@ export default function LensDetailPage() {
           </div>
 
           {/* Section 3: Treatment */}
-          <div ref={sectionRefs[2]} className="flex flex-col gap-3">
+          <div
+            ref={sectionRefs[2]}
+            onMouseEnter={() => setHoveredIndex(2)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            className={cn(
+              "flex flex-col gap-3 p-4 -m-4 rounded-3xl transition-all duration-300",
+              hoveredIndex === 2 &&
+                "bg-purple-50/50 shadow-sm ring-1 ring-purple-100/50",
+            )}
+          >
             <h2 className="text-xl font-bold text-slate-800 flex items-center gap-3">
-              <span className="text-slate-300 font-normal">3.</span> Le
-              traitement
-              <span className="h-px flex-1 bg-slate-100 ml-4"></span>
+              <span
+                className={cn(
+                  "transition-colors duration-300",
+                  hoveredIndex === 2
+                    ? "text-purple-600"
+                    : "text-slate-300 font-normal",
+                )}
+              >
+                3.
+              </span>{" "}
+              Le traitement
+              <span
+                className={cn(
+                  "h-px flex-1 ml-4 transition-colors duration-300",
+                  hoveredIndex === 2 ? "bg-purple-200" : "bg-slate-100",
+                )}
+              ></span>
             </h2>
             <ComparisonCard
               title={lens.treatment_info?.name || "Premium AR"}
               subtitle={lens.treatment_info?.code || "EXC"}
+              isHighlighted={hoveredIndex === 2}
               imageSrc={
                 lens.treatment_info?.image_url ||
                 "https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=800&auto=format&fit=crop"

@@ -9,6 +9,7 @@ interface ComparisonCardProps {
   onCompare?: () => void;
   className?: string;
   overlayText?: string;
+  isHighlighted?: boolean;
 }
 
 export function ComparisonCard({
@@ -18,22 +19,33 @@ export function ComparisonCard({
   onCompare,
   className,
   overlayText = "Comparer",
+  isHighlighted = false,
 }: ComparisonCardProps) {
   return (
     <div
       className={cn(
         "relative group rounded-2xl overflow-hidden h-[180px] shadow-sm hover:shadow-md transition-all cursor-pointer bg-white border border-slate-100",
+        isHighlighted &&
+          "ring-2 ring-blue-500 shadow-xl scale-[1.02] border-blue-200 z-10",
         className,
       )}
     >
       <img
         src={imageSrc}
         alt={title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        className={cn(
+          "absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105",
+          isHighlighted && "scale-105",
+        )}
       />
 
       {/* Overlay Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/40 to-transparent" />
+      <div
+        className={cn(
+          "absolute inset-0 bg-gradient-to-r from-white/90 via-white/40 to-transparent transition-opacity",
+          isHighlighted ? "opacity-100" : "opacity-100",
+        )}
+      />
 
       {/* Content */}
       <div className="absolute inset-0 p-6 flex flex-col justify-center items-start">
